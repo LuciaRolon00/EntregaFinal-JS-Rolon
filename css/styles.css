@@ -1,0 +1,138 @@
+/* GENERAL */
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    font-family: 'PF Tempesta Five', sans-serif;
+}
+
+body {
+    height: 100vh;
+    background: linear-gradient(#da2e2c 49%,
+            #090829 49%,
+            #090829 51%,
+            #ffffff 51%);
+}
+
+.puntos-container {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    left: 50%;
+    top: 50%;
+}
+
+/* BOTÓN DE START */
+#start {
+    font-family: 'Pokemon Solid', sans-serif;
+    background-color: #ffffff;
+    height: 6em;
+    width: 6em;
+    font-size: 1.8em;
+    border: 0.4em solid #090029;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+/* JUEGO */
+.juego-container {
+    background-color: #ffffff;
+    width: 100%;
+    max-width: 31em;
+    padding: 3em 1.5em;
+    border: 0.6em solid #090029;
+    border-radius: 0.5em;
+    position: absolute;
+    transform: translate(-50%, -50%);
+    left: 50%;
+    top: 50%;
+}
+
+.timer span {
+    font-weight: 600;
+}
+
+.header,
+.num {
+    text-align: right;
+}
+
+.pokemon-image {
+    display: block;
+    margin: 3em auto 0 auto;
+}
+
+/* OPCIONES y BOTONES */
+.opciones {
+    display: flex;
+    justify-content: center;
+    gap: 0.5em;
+    flex-wrap: wrap;
+}
+
+.opciones button {
+    background-color: #ffffff;
+    padding: 0.8em;
+    border: 0.3em solid #090029;
+    border-radius: 0.5em;
+    box-shadow: 0 0.5em 0 0 #090029;
+    cursor: pointer;
+}
+
+.opciones button:hover {
+    box-shadow: none;
+    transform: translateY(0.6em);
+}
+
+.div-btn-sgte {
+    margin-top: 3em;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.botonSgte {
+    cursor: pointer;
+    background-color: #090029;
+    color: #ffffff;
+    border-radius: 0.5em;
+    font-size: 1.2em;
+    padding: 0.8em 3em;
+}
+
+.opciones:disabled {
+    border-color: #a0a0a0;
+    color: #a0a0a0;
+    box-shadow: 0 0.5em 0 0 #a0a0a0;
+    cursor: not-allowed;
+}
+
+.opciones button.correcto {
+    background: #58cc5d;
+}
+
+.opciones button.incorrecto {
+    background: #eb5650;
+}
+
+.opciones button.correcto,
+.opciones button.incorrecto {
+    color: #ffffff;
+    border-color: #090029;
+    box-shadow: 0 0.5em 0 0 #090029;
+}
+
+.puntos-container {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    left: 50%;
+    top: 50%;
+}
+
+#puntos-usuario {
+    margin-bottom: 1em;
+    color: #ffffff;
+}
+
+/* OCULTAR */
+.hide {
+    display: none;
+}
