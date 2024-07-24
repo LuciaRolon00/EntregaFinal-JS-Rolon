@@ -104,6 +104,11 @@ const comprobar = async (e) => {
 // Siguiente pregunta
 const siguientePregunta = (e) => {
   preguntaActual += 1;
+  // Oculta la info del Pokémon
+  const infoContainer = document.querySelector(".info-container");
+  if (infoContainer) {
+    infoContainer.innerHTML = "";
+  }
   if (preguntaActual == preguntasFinal.length) {
     juegoContainer.classList.add("hide");
     puntosContainer.classList.remove("hide");
@@ -121,6 +126,11 @@ const siguientePregunta = (e) => {
 const crearTarjeta = (objetoTarjeta, generarOpciones) => {
   const { image, opcion_correcta } = objetoTarjeta;
   let opciones = mezclaAleatoria(generarOpciones(opcion_correcta));
+  // Oculta la info del Pokémon
+  const infoContainer = document.querySelector(".info-container");
+  if (infoContainer) {
+    infoContainer.innerHTML = "";
+  }
   container.innerHTML = `<div class="quiz">
       <p class="num">${preguntaActual + 1}/5</p>
       <div class="preguntas">
