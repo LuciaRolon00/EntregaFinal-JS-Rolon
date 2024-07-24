@@ -136,3 +136,25 @@ body {
 .hide {
     display: none;
 }
+
+/* POKÉAPI */
+.info-container {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.info-container img {
+    max-width: 150px;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+
+.info-container h2 {
+    font-size: 1.5em;
+    margin: 10px 0;
+}
+
+.info-container p {
+    font-size: 1.2em;
+}

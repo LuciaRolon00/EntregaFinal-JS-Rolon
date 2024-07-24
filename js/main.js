@@ -3,6 +3,8 @@
 import { preguntas, opcionesArray, generadorValorAleatorio, mezclaAleatoria, llenarPreguntas } from "./preguntas.js";
 // Import relacionado a los puntos almacenados en local storage
 import { guardarPuntosEnLS, obtenerPuntosDesdeLS, guardarPuntos } from "./puntos.js";
+// Import de PokéApi
+import { obtenerDatosPokemon, mostrarInfoPokemon } from "./pokeapi.js";
 
 // Selección de elementos del DOM
 const container = document.querySelector(".container");
@@ -70,16 +72,21 @@ const iniciarJuego = () => {
 };
 
 // Comprobar respuesta seleccionada
-const comprobar = (e) => {
+const comprobar = async (e) => {
   let solucionUsuario = e.target.innerText;
   let opciones = document.querySelectorAll(".opcion");
-  if (solucionUsuario === preguntasFinal[preguntaActual].opcion_correcta) {
+  let opcionCorrecta = preguntasFinal[preguntaActual].opcion_correcta;
+  if (solucionUsuario === opcionCorrecta) {
     e.target.classList.add("correcto");
     puntos++;
+    const datosPokemon = await obtenerDatosPokemon(opcionCorrecta);
+    if (datosPokemon) {
+      mostrarInfoPokemon(datosPokemon);
+    }
   } else {
     e.target.classList.add("incorrecto");
     opciones.forEach((element) => {
-      if (element.innerText == preguntasFinal[preguntaActual].opcion_correcta) {
+      if (element.innerText == opcionCorrecta) {
         element.classList.add("correcto");
       }
     });
