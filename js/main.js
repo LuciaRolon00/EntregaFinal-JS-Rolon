@@ -1,9 +1,6 @@
 // IMPORTS
-// Import relacionado a las preguntas
-import { preguntas, opcionesArray, generadorValorAleatorio, mezclaAleatoria, llenarPreguntas } from "./preguntas.js";
-// Import relacionado a los puntos almacenados en local storage
+import { opcionesArray, generadorValorAleatorio, mezclaAleatoria, llenarPreguntas } from "./preguntas.js";
 import { guardarPuntosEnLS, obtenerPuntosDesdeLS, guardarPuntos } from "./puntos.js";
-// Import de PokéApi
 import { obtenerDatosPokemon, mostrarInfoPokemon } from "./pokeapi.js";
 
 // Selección de elementos del DOM
@@ -16,8 +13,24 @@ const puntosUsuario = document.getElementById("puntos-usuario");
 // Declaración de variables 
 let timer = document.getElementsByClassName("timer")[0];
 let botonSgte;
-let puntos, preguntaActual, preguntasFinal;
+let puntos = 0;
+let preguntaActual;
 let cuentaRegresiva, contar = 11;
+let preguntasFinal = [];
+
+// Función para cargar preguntas desde un archivo JSON
+const cargarPreguntasDesdeJSON = async () => {
+  try {
+    const response = await fetch('db/pokemon.json');
+    if (!response.ok) {
+      throw new Error(`Error al cargar el JSON: ${response.statusText}`);
+    }
+    const data = await response.json();
+    preguntasFinal = data.pokemons.slice(0, 5);
+  } catch (error) {
+    console.error("Error cargando el JSON:", error);
+  }
+};
 
 // Función de orden superior para temporizador
 const crearTimer = (duracion, onTiempoTerminado) => {
@@ -54,21 +67,19 @@ const llenarOpciones = (opcion_correcta) => {
 
 // Empezar juego
 const iniciarJuego = () => {
+  if (!preguntasFinal || preguntasFinal.length === 0) {
+    console.error("No se cargaron preguntas");
+    return;
+  }
+
   puntosContainer.classList.add("hide");
   juegoContainer.classList.remove("hide");
-  preguntasFinal = llenarPreguntas();
-  puntos = 0;
+
+  puntos = obtenerPuntosDesdeLS(); // Recupera puntos desde Local Storage
   preguntaActual = 0;
-  // Que salga la primera pregunta
   genTarjeta(preguntasFinal[preguntaActual]);
 
-  // Recuperar puntos del localStorage
-  puntos = obtenerPuntosDesdeLS();
-  preguntasFinal = llenarPreguntas();
-  preguntaActual = 0;
-
-  // Mostrar la primera pregunta
-  genTarjeta(preguntasFinal[preguntaActual]);
+  guardarPuntos();
 };
 
 // Comprobar respuesta seleccionada
@@ -77,28 +88,29 @@ const comprobar = async (e) => {
   let opciones = document.querySelectorAll(".opcion");
   let opcionCorrecta = preguntasFinal[preguntaActual].opcion_correcta;
   if (solucionUsuario === opcionCorrecta) {
-    e.target.classList.add("correcto");
-    puntos++;
-    const datosPokemon = await obtenerDatosPokemon(opcionCorrecta);
-    if (datosPokemon) {
-      mostrarInfoPokemon(datosPokemon);
-    }
-  } else {
-    e.target.classList.add("incorrecto");
-    opciones.forEach((element) => {
-      if (element.innerText == opcionCorrecta) {
-        element.classList.add("correcto");
+      e.target.classList.add("correcto");
+      puntos++;
+      const datosPokemon = await obtenerDatosPokemon(opcionCorrecta);
+      if (datosPokemon) {
+          mostrarInfoPokemon(datosPokemon);
       }
-    });
+  } else {
+      e.target.classList.add("incorrecto");
+      opciones.forEach((element) => {
+          if (element.innerText == opcionCorrecta) {
+              element.classList.add("correcto");
+          }
+      });
   }
 
   clearInterval(cuentaRegresiva);
   // Deshabilitar todas las opciones
   opciones.forEach((element) => {
-    element.disabled = true;
+      element.disabled = true;
   });
 
-  guardarPuntos();
+  // Pasar puntos y el elemento puntosUsuario a la función
+  guardarPuntos(puntos, puntosUsuario);
 };
 
 // Siguiente pregunta
@@ -107,56 +119,60 @@ const siguientePregunta = (e) => {
   // Oculta la info del Pokémon
   const infoContainer = document.querySelector(".info-container");
   if (infoContainer) {
-    infoContainer.innerHTML = "";
+      infoContainer.innerHTML = "";
   }
   if (preguntaActual == preguntasFinal.length) {
-    juegoContainer.classList.add("hide");
-    puntosContainer.classList.remove("hide");
-    startButton.innerText = `RESTART`;
-    puntosUsuario.innerHTML = "Tus puntos acumulados son " + puntos;
-    clearInterval(cuentaRegresiva);
+      juegoContainer.classList.add("hide");
+      puntosContainer.classList.remove("hide");
+      startButton.innerText = `RESTART`;
+      puntosUsuario.innerHTML = "Tus puntos acumulados son " + puntos;
+      clearInterval(cuentaRegresiva);
   } else {
-    genTarjeta(preguntasFinal[preguntaActual]);
+      genTarjeta(preguntasFinal[preguntaActual]);
   }
 
-  guardarPuntos();
+  // Pasar puntos y el elemento puntosUsuario a la función
+  guardarPuntos(puntos, puntosUsuario);
 };
 
 // Función de orden superior para crear tarjetas de preguntas
 const crearTarjeta = (objetoTarjeta, generarOpciones) => {
   const { image, opcion_correcta } = objetoTarjeta;
   let opciones = mezclaAleatoria(generarOpciones(opcion_correcta));
+  
   // Oculta la info del Pokémon
   const infoContainer = document.querySelector(".info-container");
   if (infoContainer) {
     infoContainer.innerHTML = "";
   }
+  
   container.innerHTML = `<div class="quiz">
-      <p class="num">${preguntaActual + 1}/5</p>
-      <div class="preguntas">
-        <img class="pokemon-image" src="${image}"/>
-      </div>
-      <div class="opciones">
-        <button class="opcion" onclick="comprobar(event)">${opciones[0]}</button>
-        <button class="opcion" onclick="comprobar(event)">${opciones[1]}</button>
-        <button class="opcion" onclick="comprobar(event)">${opciones[2]}</button>
-        <button class="opcion" onclick="comprobar(event)">${opciones[3]}</button>
-      </div>
-      <div class="div-btn-sgte">
-        <button class="botonSgte" onclick="siguientePregunta(event)">Next</button>
-      </div>
+        <p class="num">${preguntaActual + 1}/5</p>
+        <div class="preguntas">
+            <img class="pokemon-image" src="${image}"/>
+        </div>
+        <div class="opciones">
+            <button class="opcion">${opciones[0]}</button>
+            <button class="opcion">${opciones[1]}</button>
+            <button class="opcion">${opciones[2]}</button>
+            <button class="opcion">${opciones[3]}</button>
+        </div>
+        <div class="div-btn-sgte">
+            <button class="botonSgte">Next</button>
+        </div>
     </div>`;
 
   contar = 11;
   clearInterval(cuentaRegresiva);
   mostrarTimer();
 
-  // Evento para los botones comprobar y siguiente pregunta
+  // Añade eventos a los botones de opciones
   const opcionButtons = document.querySelectorAll(".opcion");
   opcionButtons.forEach(button => {
     button.addEventListener("click", comprobar);
   });
 
+  // Añade evento al botón de siguiente pregunta
   const nextButton = document.querySelector(".botonSgte");
   nextButton.addEventListener("click", siguientePregunta);
 };
@@ -165,8 +181,11 @@ const genTarjeta = (objetoTarjeta) => {
   crearTarjeta(objetoTarjeta, llenarOpciones);
 };
 
-// Evento para comenzar
-startButton.addEventListener("click", iniciarJuego);
+// Cargar preguntas desde el archivo JSON
+cargarPreguntasDesdeJSON().then(() => {
+  // Evento para comenzar
+  startButton.addEventListener("click", iniciarJuego);
+});
 
 // MENSAJES DE BIENVENIDA
 Toastify({
