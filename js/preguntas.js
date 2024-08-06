@@ -48,17 +48,6 @@ export const mezclaAleatoria = (array) => array.sort(() => 0.5 - Math.random());
 
 // Función para llenar preguntas aleatorias
 export const llenarPreguntas = (preguntasFinal) => {
-    let preguntasCuenta = 0;
-    let objetosElegidos = [];
-    let lotePreguntas = [];
-    while (preguntasCuenta < 5) {
-        let valorAleatorio = generadorValorAleatorio(preguntasFinal);
-        let index = preguntasFinal.indexOf(valorAleatorio);
-        if (!objetosElegidos.includes(index)) {
-            lotePreguntas.push(valorAleatorio);
-            objetosElegidos.push(index);
-            preguntasCuenta += 1;
-        }
-    }
-    return lotePreguntas;
+    const preguntasMezcladas = mezclaAleatoria(preguntasFinal);
+    return preguntasMezcladas.slice(0, 5);
 };

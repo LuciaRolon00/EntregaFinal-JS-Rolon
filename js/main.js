@@ -21,12 +21,12 @@ let preguntasFinal = [];
 // Función para cargar preguntas desde un archivo JSON
 const cargarPreguntasDesdeJSON = async () => {
   try {
-    const response = await fetch('db/pokemon.json');
+    const response = await fetch("db/pokemon.json");
     if (!response.ok) {
-      throw new Error(`Error al cargar el JSON: ${response.statusText}`);
+      throw new Error("Error al cargar el JSON: ${response.statusText}");
     }
     const data = await response.json();
-    preguntasFinal = data.pokemons.slice(0, 5);
+    preguntasFinal = llenarPreguntas(data.pokemons);
   } catch (error) {
     console.error("Error cargando el JSON:", error);
   }
@@ -109,7 +109,6 @@ const comprobar = async (e) => {
       element.disabled = true;
   });
 
-  // Pasar puntos y el elemento puntosUsuario a la función
   guardarPuntos(puntos, puntosUsuario);
 };
 
@@ -131,7 +130,6 @@ const siguientePregunta = (e) => {
       genTarjeta(preguntasFinal[preguntaActual]);
   }
 
-  // Pasar puntos y el elemento puntosUsuario a la función
   guardarPuntos(puntos, puntosUsuario);
 };
 
@@ -166,13 +164,13 @@ const crearTarjeta = (objetoTarjeta, generarOpciones) => {
   clearInterval(cuentaRegresiva);
   mostrarTimer();
 
-  // Añade eventos a los botones de opciones
+  // Eventos a los botones de opciones
   const opcionButtons = document.querySelectorAll(".opcion");
   opcionButtons.forEach(button => {
     button.addEventListener("click", comprobar);
   });
 
-  // Añade evento al botón de siguiente pregunta
+  // Eventos a los botones de siguiente
   const nextButton = document.querySelector(".botonSgte");
   nextButton.addEventListener("click", siguientePregunta);
 };
@@ -181,7 +179,7 @@ const genTarjeta = (objetoTarjeta) => {
   crearTarjeta(objetoTarjeta, llenarOpciones);
 };
 
-// Cargar preguntas desde el archivo JSON
+// Cargar preguntas desde el JSON
 cargarPreguntasDesdeJSON().then(() => {
   // Evento para comenzar
   startButton.addEventListener("click", iniciarJuego);
